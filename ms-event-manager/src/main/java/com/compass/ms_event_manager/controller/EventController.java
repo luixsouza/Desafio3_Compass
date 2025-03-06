@@ -1,6 +1,8 @@
 package com.compass.ms_event_manager.controller;
 
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.compass.ms_event_manager.model.Event;
@@ -28,6 +30,18 @@ public class EventController {
     @GetMapping("/get-all-events")
     public List<Event> getAllEvents() {
         return eventService.getAllEvents();
+    }
+
+    @GetMapping("/get-all-events/sorted")
+    public ResponseEntity<List<Event>> getAllEventsSorted() {
+        List<Event> sortedEvents = eventService.getAllEventsSorted();
+        return ResponseEntity.ok(sortedEvents);
+    }
+
+    @PutMapping("/update-event/{id}")
+    public ResponseEntity<Event> updateEvent(@PathVariable String id, @RequestBody Event updatedEvent) {
+        Event event = eventService.updateEvent(id, updatedEvent);
+        return ResponseEntity.ok(event);
     }
 
     @DeleteMapping("/delete-event/{id}")

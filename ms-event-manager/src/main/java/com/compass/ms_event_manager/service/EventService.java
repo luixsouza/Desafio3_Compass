@@ -37,4 +37,25 @@ public class EventService {
     public void deleteEvent(String id) {
         eventRepository.deleteById(id);
     }
+
+    public List<Event> getAllEventsSorted() {
+        return eventRepository.findAllByOrderByEventNameAsc();
+    }
+
+    public Event updateEvent(String id, Event updatedEvent) {
+        Event existingEvent = eventRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Evento não encontrado com o ID: " + id));
+
+        existingEvent.setEventName(updatedEvent.getEventName());
+        existingEvent.setDateTime(updatedEvent.getDateTime());
+        existingEvent.setCep(updatedEvent.getCep());
+
+        var endereco = viaCepClient.getAddressByCep(updatedEvent.getCep());
+        existingEvent.setLogradouro(endereco.getLogradouro());
+        existingEvent.setBairro(endereco.getBairro());
+        existingEvent.setCidade(endereco.getLocalidade());
+        existingEvent.setUf(endereco.getUf());
+
+        return eventRepository.save(existingEvent);
+    }   
 }
