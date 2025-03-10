@@ -3,7 +3,6 @@ package com.compass.ms_ticket_manager.model;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.math.BigDecimal;
@@ -21,7 +20,5 @@ public class Ticket {
     private BigDecimal brlAmount;
     private BigDecimal usdAmount;
     private String status;
-
-    @DBRef
     private Event event;
 }

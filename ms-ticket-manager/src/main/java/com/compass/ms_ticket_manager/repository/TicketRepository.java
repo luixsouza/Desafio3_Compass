@@ -6,4 +6,5 @@ import com.compass.ms_ticket_manager.model.Ticket;
 
 public interface TicketRepository extends MongoRepository<Ticket, String> {
     List<Ticket> findByEventId(String eventId);
+    List<Ticket> findByCpf(String cpf);
 }
