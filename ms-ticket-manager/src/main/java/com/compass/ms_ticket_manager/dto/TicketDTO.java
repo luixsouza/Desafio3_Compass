@@ -1,5 +1,7 @@
 package com.compass.ms_ticket_manager.dto;
 
+import java.math.BigDecimal;
+
 import lombok.Data;
 
 @Data
@@ -10,6 +12,6 @@ public class TicketDTO {
     private String customerMail;
     private String eventId;
     private String eventName;
-    private String brlAmount;
-    private String usdAmount;
+    private BigDecimal brlAmount;
+    private BigDecimal usdAmount;
 }

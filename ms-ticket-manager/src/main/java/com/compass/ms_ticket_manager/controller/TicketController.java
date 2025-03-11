@@ -20,13 +20,9 @@ public class TicketController {
     private TicketService ticketService;
 
     @PostMapping("/create-ticket")
-    public ResponseEntity<Object> createTicket(@RequestBody TicketDTO ticketDTO) {
-        try {
-            Ticket ticket = ticketService.createTicket(ticketDTO);
-            return ResponseEntity.status(HttpStatus.CREATED).body(ticket);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        }
+    public ResponseEntity<Ticket> createTicket(@RequestBody TicketDTO ticketDTO) {
+        Ticket createdTicket = ticketService.createTicket(ticketDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdTicket);
     }
 
     @GetMapping("/get-ticket/{id}")
@@ -37,6 +33,12 @@ public class TicketController {
     @GetMapping("/get-ticket-by-cpf/{cpf}")
     public List<Ticket> getTicketsByCpf(@PathVariable String cpf) {
         return ticketService.getTicketsByCpf(cpf);
+    }
+
+    @PatchMapping("/update-ticket/{id}")
+    public ResponseEntity<Ticket> updateTicket(@PathVariable String id, @RequestBody TicketDTO ticketDTO) {
+        Ticket updatedTicket = ticketService.updateTicket(id, ticketDTO);
+        return ResponseEntity.ok(updatedTicket);
     }
 
     @GetMapping("/check-tickets-by-event/{eventId}")

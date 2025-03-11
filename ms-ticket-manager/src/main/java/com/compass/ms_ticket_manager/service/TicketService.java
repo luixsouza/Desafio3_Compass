@@ -3,34 +3,31 @@ package com.compass.ms_ticket_manager.service;
 import org.springframework.stereotype.Service;
 import com.compass.ms_ticket_manager.client.EventClient;
 import com.compass.ms_ticket_manager.dto.TicketDTO;
+import com.compass.ms_ticket_manager.exception.EventNotFoundException;
+import com.compass.ms_ticket_manager.mapper.TicketMapper;
 import com.compass.ms_ticket_manager.model.Event;
 import com.compass.ms_ticket_manager.model.Ticket;
 import com.compass.ms_ticket_manager.repository.TicketRepository;
+import com.compass.ms_ticket_manager.validator.TicketValidator;
+
 import lombok.AllArgsConstructor;
 import java.util.List;
-import java.util.UUID;
 
 @Service
 @AllArgsConstructor
 public class TicketService {
 
-    private final TicketRepository ticketRepository;
     private final EventClient eventClient;
+    private final TicketRepository ticketRepository;
+    private final TicketMapper ticketMapper;
+    private final TicketValidator ticketValidator;
 
     public Ticket createTicket(TicketDTO ticketDTO) {
         Event event = eventClient.getEventById(ticketDTO.getEventId());
         if (event == null) {
-            throw new RuntimeException("Evento não encontrado");
+            throw new EventNotFoundException("Evento não encontrado");
         }
-    
-        Ticket ticket = new Ticket();
-        ticket.setTicketId(UUID.randomUUID().toString());
-        ticket.setCpf(ticketDTO.getCpf());
-        ticket.setCustomerName(ticketDTO.getCustomerName());
-        ticket.setCustomerMail(ticketDTO.getCustomerMail());
-        ticket.setStatus("concluído");
-        ticket.setEvent(event);
-    
+        Ticket ticket = ticketMapper.toEntity(ticketDTO, event);
         return ticketRepository.save(ticket);
     }
 
@@ -41,6 +38,13 @@ public class TicketService {
 
     public List<Ticket> getTicketsByCpf(String cpf) {
         return ticketRepository.findByCpf(cpf);
+    }
+
+    public Ticket updateTicket(String id, TicketDTO ticketDTO) {
+        Ticket existingTicket = getTicketById(id);
+        ticketValidator.validateTicketNotCancelled(existingTicket);
+        Ticket updatedTicket = ticketMapper.toEntity(ticketDTO, existingTicket);
+        return ticketRepository.save(updatedTicket);
     }
 
     public boolean hasTicketsByEventId(String eventId) {
