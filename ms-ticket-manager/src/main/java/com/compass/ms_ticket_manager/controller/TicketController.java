@@ -2,13 +2,12 @@ package com.compass.ms_ticket_manager.controller;
 
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import com.compass.ms_ticket_manager.dto.CheckTicketsResponseDTO;
 import com.compass.ms_ticket_manager.dto.TicketDTO;
 import com.compass.ms_ticket_manager.model.Ticket;
 import com.compass.ms_ticket_manager.service.TicketService;
@@ -22,13 +21,10 @@ public class TicketController {
 
     @PostMapping("/create-ticket")
     public ResponseEntity<Object> createTicket(@RequestBody TicketDTO ticketDTO) {
-        Logger logger = LoggerFactory.getLogger(this.getClass());
-    
         try {
             Ticket ticket = ticketService.createTicket(ticketDTO);
             return ResponseEntity.status(HttpStatus.CREATED).body(ticket);
         } catch (Exception e) {
-            logger.error("Erro ao criar ticket: ", e);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
@@ -41,6 +37,13 @@ public class TicketController {
     @GetMapping("/get-ticket-by-cpf/{cpf}")
     public List<Ticket> getTicketsByCpf(@PathVariable String cpf) {
         return ticketService.getTicketsByCpf(cpf);
+    }
+
+    @GetMapping("/check-tickets-by-event/{eventId}")
+    public ResponseEntity<CheckTicketsResponseDTO> checkTicketsByEventId(@PathVariable String eventId) {
+        boolean hasTickets = ticketService.hasTicketsByEventId(eventId);
+        CheckTicketsResponseDTO response = new CheckTicketsResponseDTO(eventId, hasTickets);
+        return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/cancel-ticket/{id}")

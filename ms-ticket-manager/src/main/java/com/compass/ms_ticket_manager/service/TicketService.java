@@ -43,6 +43,10 @@ public class TicketService {
         return ticketRepository.findByCpf(cpf);
     }
 
+    public boolean hasTicketsByEventId(String eventId) {
+        return ticketRepository.existsByEventIdAndStatus(eventId, "concluído");
+    }
+
     public Ticket cancelTicketById(String id) {
         Ticket ticket = ticketRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Ingresso não encontrado"));

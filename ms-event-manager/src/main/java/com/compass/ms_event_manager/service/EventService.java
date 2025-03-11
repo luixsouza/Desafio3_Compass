@@ -3,7 +3,10 @@ package com.compass.ms_event_manager.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import com.compass.ms_event_manager.client.TicketClient;
 import com.compass.ms_event_manager.client.ViaCepClient;
+import com.compass.ms_event_manager.dto.CheckTicketsResponseDTO;
+import com.compass.ms_event_manager.exception.EventDeletionException;
 import com.compass.ms_event_manager.model.Event;
 import com.compass.ms_event_manager.repository.EventRepository;
 
@@ -15,6 +18,7 @@ import java.util.Optional;
 public class EventService {
     private final EventRepository eventRepository;
     private final ViaCepClient viaCepClient;
+    private final TicketClient ticketClient;
 
     public Event createEvent(Event event) {
         var endereco = viaCepClient.getAddressByCep(event.getCep());
@@ -34,8 +38,12 @@ public class EventService {
         return eventRepository.findAll();
     }
 
-    public void deleteEvent(String id) {
-        eventRepository.deleteById(id);
+    public void deleteEvent(String eventId) {
+        CheckTicketsResponseDTO response = ticketClient.checkTicketsByEventId(eventId);
+        if (response.isHasTickets()) {
+            throw new EventDeletionException("O evento não pode ser deletado porque possui ingressos vendidos.");
+        }
+        eventRepository.deleteById(eventId);
     }
 
     public List<Event> getAllEventsSorted() {

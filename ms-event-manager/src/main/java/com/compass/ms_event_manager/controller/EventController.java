@@ -2,9 +2,11 @@ package com.compass.ms_event_manager.controller;
 
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import com.compass.ms_event_manager.exception.EventDeletionException;
 import com.compass.ms_event_manager.model.Event;
 import com.compass.ms_event_manager.service.EventService;
 
@@ -44,10 +46,13 @@ public class EventController {
         return ResponseEntity.ok(event);
     }
 
-    @DeleteMapping("/delete-event/{id}")
-    public String deleteEvent(@PathVariable String id) {
-        eventService.deleteEvent(id);
-        return "Evento removido com sucesso!";
+    @DeleteMapping("/delete-event/{eventId}")
+    public ResponseEntity<?> deleteEvent(@PathVariable String eventId) {
+        try {
+            eventService.deleteEvent(eventId);
+            return ResponseEntity.noContent().build();
+        } catch (EventDeletionException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+        }
     }
 }
-
