@@ -26,35 +26,39 @@ public class TicketController {
     }
 
     @GetMapping("/get-ticket/{id}")
-    public Ticket getTicketById(@PathVariable String id) {
-        return ticketService.getTicketById(id);
+    public ResponseEntity<Ticket> getTicketById(@PathVariable String id) {
+        Ticket ticket = ticketService.getTicketById(id);
+        return ResponseEntity.status(HttpStatus.OK).body(ticket);
     }
 
     @GetMapping("/get-ticket-by-cpf/{cpf}")
-    public List<Ticket> getTicketsByCpf(@PathVariable String cpf) {
-        return ticketService.getTicketsByCpf(cpf);
+    public ResponseEntity<List<Ticket>> getTicketsByCpf(@PathVariable String cpf) {
+        List<Ticket> tickets = ticketService.getTicketsByCpf(cpf);
+        return ResponseEntity.status(HttpStatus.OK).body(tickets);
     }
 
     @PatchMapping("/update-ticket/{id}")
     public ResponseEntity<Ticket> updateTicket(@PathVariable String id, @RequestBody TicketDTO ticketDTO) {
         Ticket updatedTicket = ticketService.updateTicket(id, ticketDTO);
-        return ResponseEntity.ok(updatedTicket);
+        return ResponseEntity.status(HttpStatus.OK).body(updatedTicket);
     }
 
     @GetMapping("/check-tickets-by-event/{eventId}")
     public ResponseEntity<CheckTicketsResponseDTO> checkTicketsByEventId(@PathVariable String eventId) {
         boolean hasTickets = ticketService.hasTicketsByEventId(eventId);
         CheckTicketsResponseDTO response = new CheckTicketsResponseDTO(eventId, hasTickets);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @DeleteMapping("/cancel-ticket/{id}")
-    public Ticket cancelTicketById(@PathVariable String id) {
-        return ticketService.cancelTicketById(id);
+    public ResponseEntity<Void> cancelTicketById(@PathVariable String id) {
+        ticketService.cancelTicketById(id);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @DeleteMapping("/cancel-ticket-by-cpf/{cpf}")
-    public List<Ticket> cancelTicketsByCpf(@PathVariable String cpf) {
-        return ticketService.cancelTicketsByCpf(cpf);
+    public ResponseEntity<Void> cancelTicketsByCpf(@PathVariable String cpf) {
+        ticketService.cancelTicketsByCpf(cpf);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }
