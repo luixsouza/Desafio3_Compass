@@ -9,4 +9,3 @@ public class AddressDTO {
     private String localidade;
     private String uf;
 }
-

@@ -4,66 +4,88 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import com.compass.ms_event_manager.client.TicketClient;
-import com.compass.ms_event_manager.client.ViaCepClient;
 import com.compass.ms_event_manager.dto.CheckTicketsResponseDTO;
-import com.compass.ms_event_manager.exception.EventDeletionException;
+import com.compass.ms_event_manager.exception.*;
+import com.compass.ms_event_manager.mapper.EventMapper;
 import com.compass.ms_event_manager.model.Event;
 import com.compass.ms_event_manager.repository.EventRepository;
 
+import feign.FeignException;
+
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class EventService {
+
     private final EventRepository eventRepository;
-    private final ViaCepClient viaCepClient;
     private final TicketClient ticketClient;
+    private final EventMapper eventMapper;
 
     public Event createEvent(Event event) {
-        var endereco = viaCepClient.getAddressByCep(event.getCep());
-        event.setLogradouro(endereco.getLogradouro());
-        event.setBairro(endereco.getBairro());
-        event.setCidade(endereco.getLocalidade());
-        event.setUf(endereco.getUf());
-
-        return eventRepository.save(event);
+        if (event == null || event.getEventName() == null || event.getDateTime() == null) {
+            throw new InvalidEventDataException("Dados do evento inválidos ou incompletos.");
+        }
+        try {
+            Event eventEntity = eventMapper.toCreateEntity(event);
+            return eventRepository.save(eventEntity);
+        } catch (Exception e) {
+            throw new EventCreationException("Erro ao criar o evento: " + e.getMessage());
+        }
     }
 
-    public Optional<Event> getEventById(String id) {
-        return eventRepository.findById(id);
+    public Event getEventById(String id) {
+        return eventRepository.findById(id)
+                .orElseThrow(() -> new EventNotFoundException("Evento não encontrado com ID: " + id));
     }
+    
 
     public List<Event> getAllEvents() {
-        return eventRepository.findAll();
+        try {
+            return eventRepository.findAll();
+        } catch (Exception e) {
+            throw new EventRetrievalException("Erro ao recuperar os eventos: " + e.getMessage());
+        }
     }
 
     public void deleteEvent(String eventId) {
-        CheckTicketsResponseDTO response = ticketClient.checkTicketsByEventId(eventId);
-        if (response.isHasTickets()) {
-            throw new EventDeletionException("O evento não pode ser deletado porque possui ingressos vendidos.");
+        if (!eventRepository.existsById(eventId)) {
+            throw new EventNotFoundException("Evento não encontrado para o id: " + eventId);
+        } try {
+            CheckTicketsResponseDTO response = ticketClient.checkTicketsByEventId(eventId);
+            if (response.isHasTickets()) {
+                throw new EventDeletionException("O evento não pode ser deletado porque possui ingressos vendidos.");
+            }
+            eventRepository.deleteById(eventId);
+        } catch (FeignException.NotFound e) {
+            eventRepository.deleteById(eventId);
+        } catch (FeignException e) {
+            throw new TicketServiceUnavailableException("Erro ao se comunicar com o serviço de tickets: " + e.getMessage());
+        } catch (EventDeletionException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new TicketServiceUnavailableException("Erro inesperado: " + e.getMessage());
         }
-        eventRepository.deleteById(eventId);
     }
-
+    
     public List<Event> getAllEventsSorted() {
-        return eventRepository.findAllByOrderByEventNameAsc();
+        try {
+            return eventRepository.findAllByOrderByEventNameAsc();
+        } catch (Exception e) {
+            throw new EventRetrievalException("Erro ao recuperar os eventos ordenados: " + e.getMessage());
+        }
     }
 
-    public Event updateEvent(String id, Event updatedEvent) {
-        Event existingEvent = eventRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Evento não encontrado com o ID: " + id));
-
-        existingEvent.setEventName(updatedEvent.getEventName());
-        existingEvent.setDateTime(updatedEvent.getDateTime());
-        existingEvent.setCep(updatedEvent.getCep());
-
-        var endereco = viaCepClient.getAddressByCep(updatedEvent.getCep());
-        existingEvent.setLogradouro(endereco.getLogradouro());
-        existingEvent.setBairro(endereco.getBairro());
-        existingEvent.setCidade(endereco.getLocalidade());
-        existingEvent.setUf(endereco.getUf());
-
-        return eventRepository.save(existingEvent);
-    }   
+    public Event updateEvent(String eventId, Event updatedEvent) {
+        Event existingEvent = eventRepository.findById(eventId)
+                .orElseThrow(() -> new EventNotFoundException("Evento não encontrado com ID: " + eventId));
+        if (updatedEvent == null || (updatedEvent.getEventName() == null && updatedEvent.getDateTime() == null)) {
+            throw new InvalidEventDataException("Pelo menos um campo deve ser fornecido para atualização.");
+        } try {
+            Event updatedEventEntity = eventMapper.toUpdateEntity(existingEvent, updatedEvent);
+            return eventRepository.save(updatedEventEntity);
+        } catch (Exception e) {
+            throw new EventUpdateException("Erro ao atualizar o evento: " + e.getMessage());
+        }
+    }
 }
