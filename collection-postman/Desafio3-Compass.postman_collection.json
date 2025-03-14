@@ -1,0 +1,352 @@
+{
+	"info": {
+		"_postman_id": "a5991554-7103-46fd-b504-61256d6728eb",
+		"name": "Desafio3-Compass",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "35373196"
+	},
+	"item": [
+		{
+			"name": "Events",
+			"item": [
+				{
+					"name": "Criar um evento",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"eventName\": \"Ingresso pra cachoeira\",\r\n    \"dateTime\": \"2025-03-22T09:00:00\",\r\n    \"cep\": \"72980-970\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/v1/events/create-event",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"events",
+								"create-event"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Buscar evento por ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/v1/events/get-event/{id}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"events",
+								"get-event",
+								"{id}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Buscar todos os eventos",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/v1/events/get-all-events",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"events",
+								"get-all-events"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Buscar eventos por ordem alfabetica",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/v1/events/get-all-events/sorted",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"events",
+								"get-all-events",
+								"sorted"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Atualizar um evento",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"eventName\": \"Ticket pra Cachoeira\",\r\n    \"dateTime\": \"2025-03-22T10:30:00\",\r\n    \"cep\": \"72980-970\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/v1/events/update-event/{event-id}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"events",
+								"update-event",
+								"{event-id}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Deletar um evento",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/v1/events/delete-event/{event-id}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v1",
+								"events",
+								"delete-event",
+								"{event-id}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Tickets",
+			"item": [
+				{
+					"name": "Criar um ticket",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"customerName\": \"Usuário Teste\",\r\n  \"cpf\": \"999.653.645-36\",\r\n  \"customerMail\": \"usertest@email.com\",\r\n  \"eventId\": \"{event-id-string}\",\r\n  \"brlAmount\": \"50.00\",\r\n  \"usdAmount\": \"7.50\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8081/api/v1/tickets/create-ticket",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"api",
+								"v1",
+								"tickets",
+								"create-ticket"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Buscar ticket por ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8081/api/v1/tickets/get-ticket/{ticket-id}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"api",
+								"v1",
+								"tickets",
+								"get-ticket",
+								"{ticket-id}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Buscar ticket por CPF",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8081/api/v1/tickets/get-ticket-by-cpf/{cpf}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"api",
+								"v1",
+								"tickets",
+								"get-ticket-by-cpf",
+								"{cpf}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Buscar tickets vinculados a um evento",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8081/api/v1/tickets/check-tickets-by-event/{event-id}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"api",
+								"v1",
+								"tickets",
+								"check-tickets-by-event",
+								"{event-id}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Atualizar um ticket",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"customerName\": \"Teste Usuário\",\r\n  \"customerMail\": \"testuser@email.com\",\r\n  \"brlAmount\": \"100.00\",\r\n  \"usdAmount\": \"20.00\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8081/api/v1/tickets/update-ticket/{ticket-id}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"api",
+								"v1",
+								"tickets",
+								"update-ticket",
+								"{ticket-id}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Deletar um ticket por ID",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8081/api/v1/tickets/cancel-ticket/{ticket-id}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"api",
+								"v1",
+								"tickets",
+								"cancel-ticket",
+								"{ticket-id}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Deletar um ticket por CPF",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8081/api/v1/tickets/cancel-ticket-by-cpf/{cpf}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8081",
+							"path": [
+								"api",
+								"v1",
+								"tickets",
+								"cancel-ticket-by-cpf",
+								"{cpf}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
